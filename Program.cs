@@ -19,7 +19,11 @@ namespace MCC78
             Console.WriteLine("| 3.   Update                           |");
             Console.WriteLine("| 4.   Delete                           |");
             Console.WriteLine("| 5.   Insert to ALL                    |");
-            Console.WriteLine("| 6.   Exit                             |");
+            Console.WriteLine("| 6.   Get ALL                          |");
+            Console.WriteLine("| 7.   Get Profiling                    |");
+            Console.WriteLine("| 8.   Get GPA = 4                      |");
+            Console.WriteLine("| 9.   Get All EMP                      |");
+            Console.WriteLine("| 10.  Exit                             |");
             Console.WriteLine("-----------------------------------------");
             Console.Write("Pilih menu : ");
         }
@@ -89,7 +93,7 @@ namespace MCC78
                         }
                         else
                         {
-
+                            Console.WriteLine("Invalid Input");
                         }
                         break;
 
@@ -242,13 +246,55 @@ namespace MCC78
                         break;
 
                     case 6:
+                        Console.WriteLine("\nSELECT ALL FROM EMP");
+                        Console.WriteLine("------------------------------------------------------------");
+                        var results1 = Employees.GetEmployee();
+                        foreach (var results2 in results1)
+                        {
+                            Console.WriteLine("Id            : " + results2.Id);
+                            Console.WriteLine("NIK           : " + results2.Nik);
+                            Console.WriteLine("First Name    : " + results2.FirstName);
+                            Console.WriteLine("Last Name     : " + results2.LastName);
+                            Console.WriteLine("Birthdate     : " + results2.Birthdate);
+                            Console.WriteLine("Gender        : " + results2.Gender);
+                            Console.WriteLine("Hiring Date   : " + results2.HiringDate);
+                            Console.WriteLine("Email         : " + results2.Email);
+                            Console.WriteLine("Phone Number  : " + results2.PhoneNumber);
+                            Console.WriteLine("Department ID : " + results2.DepartmentId);
+                            Console.WriteLine("-------------------------------------------------------");
+                        }
+                        break;
+
+                    case 7:
+                        Console.WriteLine("\nSELECT ALL FROM PROFILING");
+                        Console.WriteLine("------------------------------------------------------------");
+                        var results3 = Profilings.GetProfiling();
+                        foreach (var results4 in results3)
+                        {
+                            Console.WriteLine("Employee ID        : " + results4.EmployeeId);
+                            Console.WriteLine("Education ID       : " + results4.EducationId);
+                            Console.WriteLine("-------------------------------------------------------");
+                        }
+                        break;
+
+                    case 8:
+                        var educations = Educations.GetEducation();
+                        var getGpa = educations.Where(u => u.GPA == "4");
+
+                        foreach(var  gpa in getGpa)
+                        {
+                            gpa.Output();
+                        }
+                        break;
+
+                    case 9:
                         break;
 
                     default:
                         Console.WriteLine("Input Invalid");
                         break;
                 }
-            } while (choice != 6);
+            } while (choice != 10);
         }
     }
 }

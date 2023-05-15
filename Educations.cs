@@ -77,64 +77,6 @@ namespace MCC78
             return result;
         }
 
-        public static int InsertEducationId(Educations educations)
-        {
-            int result = 0;
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
-            var university = new Universities();
-            SqlTransaction transaction = connection.BeginTransaction();
-            try
-            {
-                SqlCommand command = new SqlCommand();
-                command.Connection = connection;
-                command.CommandText = "INSERT INTO tb_m_educations (major,degree,gpa,university_id) VALUES (@major, @Degree, @Gpa, @University_id)";
-                command.Transaction = transaction;
-
-                var pMajor = new SqlParameter();
-                pMajor.ParameterName = "@major";
-                pMajor.SqlDbType = SqlDbType.VarChar;
-                pMajor.Size = 100;
-                pMajor.Value = educations.Major;
-                command.Parameters.Add(pMajor);
-
-                var pDegree = new SqlParameter();
-                pDegree.ParameterName = "@Degree";
-                pDegree.SqlDbType = SqlDbType.VarChar;
-                pDegree.Size = 100;
-                pDegree.Value = educations.Degree;
-                command.Parameters.Add(pDegree);
-
-                var pGpa = new SqlParameter();
-                pGpa.ParameterName = "@Gpa";
-                pGpa.SqlDbType = SqlDbType.VarChar;
-                pGpa.Size = 5;
-                pGpa.Value = educations.GPA;
-                command.Parameters.Add(pGpa);
-
-                var pUniversity_id = new SqlParameter();
-                pUniversity_id.ParameterName = "@University_id";
-                pUniversity_id.SqlDbType = SqlDbType.Int;
-                pUniversity_id.Value = university.Id;
-                command.Parameters.Add(pUniversity_id);
-
-                result = command.ExecuteNonQuery();
-                transaction.Commit();
-
-                return result;
-            }
-
-            catch (Exception e)
-            {
-                transaction.Rollback();
-            }
-            finally
-            {
-                connection.Close();
-            }
-            return result;
-        }
-
         public static List<Educations> GetEducation()
         {
             var educations = new List<Educations>();
@@ -264,6 +206,17 @@ namespace MCC78
             }
             return result;
 
+        }
+
+        public void Output()
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Id: " + Id);
+            Console.WriteLine("Major: " + Major);
+            Console.WriteLine("Degree: " + Degree);
+            Console.WriteLine("GPA: " + GPA);
+            Console.WriteLine("Universty Id : " + UniversityId);
+            Console.WriteLine("-----------------------------------------");
         }
     }
 }
