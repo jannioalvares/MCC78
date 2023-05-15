@@ -288,6 +288,47 @@ namespace MCC78
                         break;
 
                     case 9:
+                        var educationGet = Educations.GetEducation();
+                        var employeeGet = Employees.GetEmployee();
+                        var profilingGet = Profilings.GetProfiling();
+                        var universityGet = Universities.GetUniversities();
+
+                        var getAll = from emp in employeeGet
+                                     join pro in profilingGet on emp.Id equals pro.EmployeeId
+                                     join edu in educationGet on pro.EducationId equals edu.Id
+                                     join uni in universityGet on edu.UniversityId equals uni.Id
+                                     select new { 
+                                         NIK = emp.Nik, 
+                                         Fullname = emp.FirstName+" "+emp.LastName,
+                                         Birthdate = emp.Birthdate,
+                                         Gender = emp.Gender,
+                                         HiringDate = emp.HiringDate,
+                                         Email = emp.Email,
+                                         PhoneNumber = emp.PhoneNumber,
+                                         Major = edu.Major,
+                                         Degree = edu.Degree,
+                                         GPA = edu.GPA,
+                                         Univesity = uni.Name
+                                         };
+
+                        foreach(var get in getAll)
+                        {
+                            Console.WriteLine($"NIK         = {get.NIK}");
+                            Console.WriteLine($"Fullname    = {get.Fullname}");
+                            Console.WriteLine($"Birthdate   = {get.Birthdate}");
+                            Console.WriteLine($"Gender      = {get.Gender}");
+                            Console.WriteLine($"HiringDate  = {get.HiringDate}");
+                            Console.WriteLine($"Email       = {get.Email}");
+                            Console.WriteLine($"PhoneNumber = {get.PhoneNumber}");
+                            Console.WriteLine($"Major       = {get.Major}");
+                            Console.WriteLine($"Degree      = {get.Degree}");
+                            Console.WriteLine($"GPA         = {get.GPA}");
+                            Console.WriteLine($"Univesity   = {get.Univesity}");
+                            Console.WriteLine("-------------------------------------------------------");
+
+                        }
+
+
                         break;
 
                     default:
