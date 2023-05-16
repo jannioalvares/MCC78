@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using MCC78.Context;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,19 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCC78
+namespace MCC78.Model
 {
-    public class Universities
+    public class University
     {
-        private static readonly string connectionString =
-         "Data Source=SWHITE;Database=db_Emp;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public static int InsertUniversity(Universities university)
+        public int InsertUniversity(University university)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -53,10 +52,10 @@ namespace MCC78
             return result;
         }
 
-        public static List<Universities> GetUniversities()
+        public List<University> GetUniversities()
         {
-            var universities = new List<Universities>();
-            using SqlConnection connection = new SqlConnection(connectionString);
+            var universities = new List<University>();
+            using SqlConnection connection = MyConnection.Get();
             try
             {
                 SqlCommand command = new SqlCommand();
@@ -69,7 +68,7 @@ namespace MCC78
                 {
                     while (reader.Read())
                     {
-                        var university = new Universities();
+                        var university = new University();
                         university.Id = reader.GetInt32(0);
                         university.Name = reader.GetString(1);
 
@@ -86,13 +85,13 @@ namespace MCC78
             {
                 connection.Close();
             }
-            return new List<Universities>();
+            return new List<University>();
         }
 
-        public static int UpdateUniversity(Universities university)
+        public int UpdateUniversity(University university)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -130,10 +129,10 @@ namespace MCC78
             return result;
         }
 
-        public static int DeleteUniversity(Universities university)
+        public int DeleteUniversity(University university)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -164,5 +163,18 @@ namespace MCC78
             }
             return result;
         }
+
+        public int GetUnivId()
+        {
+            using var connection = MyConnection.Get();
+            connection.Open();
+            SqlCommand command = new SqlCommand("SELECT TOP 1 id FROM tb_m_universities ORDER BY id DESC", connection);
+
+            int id = Convert.ToInt32(command.ExecuteScalar());
+            connection.Close();
+
+            return id;
+        }
     }
 }
+

@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using MCC78.Context;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCC78
+namespace MCC78.Model
 {
-    public class Educations
+    public class Education
     {
         public int Id { get; set; }
         public string Major { get; set; }
@@ -16,13 +17,10 @@ namespace MCC78
         public string GPA { get; set; }
         public int UniversityId { get; set; }
 
-        private static readonly string connectionString =
-         "Data Source=SWHITE;Database=db_Emp;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
-
-        public static int InsertEducation(Educations educations)
+        public int InsertEducation(Education educations)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -30,7 +28,8 @@ namespace MCC78
             {
                 SqlCommand command = new SqlCommand();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO tb_m_educations (major,degree,gpa,university_id) VALUES (@major, @Degree, @Gpa, @University_id)";
+                command.CommandText =
+                    "INSERT INTO tb_m_educations (major,degree,gpa,university_id) VALUES (@major, @Degree, @Gpa, @University_id)";
                 command.Transaction = transaction;
 
                 var pMajor = new SqlParameter();
@@ -74,13 +73,14 @@ namespace MCC78
             {
                 connection.Close();
             }
+
             return result;
         }
 
-        public static List<Educations> GetEducation()
+        public List<Education> GetEducation()
         {
-            var educations = new List<Educations>();
-            using SqlConnection connection = new SqlConnection(connectionString);
+            var educations = new List<Education>();
+            using SqlConnection connection = MyConnection.Get();
             try
             {
                 SqlCommand command = new SqlCommand();
@@ -93,7 +93,7 @@ namespace MCC78
                 {
                     while (reader.Read())
                     {
-                        var education = new Educations();
+                        var education = new Education();
                         education.Id = reader.GetInt32(0);
                         education.Major = reader.GetString(1);
                         education.Degree = reader.GetString(2);
@@ -102,6 +102,7 @@ namespace MCC78
 
                         educations.Add(education);
                     }
+
                     return educations;
                 }
             }
@@ -113,13 +114,14 @@ namespace MCC78
             {
                 connection.Close();
             }
-            return new List<Educations>();
+
+            return new List<Education>();
         }
 
-        public static int UpdateEducation(Educations education)
+        public int UpdateEducation(Education education)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -127,7 +129,8 @@ namespace MCC78
             {
                 SqlCommand command = new SqlCommand();
                 command.Connection = connection;
-                command.CommandText = "UPDATE tb_m_educations SET major = @major, degree = @degree, gpa = @gpa, university_id = @univ_id WHERE id = @id";
+                command.CommandText =
+                    "UPDATE tb_m_educations SET major = @major, degree = @degree, gpa = @gpa, university_id = @univ_id WHERE id = @id";
                 command.Transaction = transaction;
 
                 var pMajor = new SqlParameter();
@@ -169,13 +172,14 @@ namespace MCC78
             {
                 connection.Close();
             }
+
             return result;
         }
 
-        public static int DeleteEducation(Educations educations)
+        public int DeleteEducation(Education educations)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -204,19 +208,21 @@ namespace MCC78
             {
                 connection.Close();
             }
-            return result;
 
+            return result;
         }
 
-        public void Output()
+        public int GetEduId()
         {
-            Console.WriteLine("");
-            Console.WriteLine("Id: " + Id);
-            Console.WriteLine("Major: " + Major);
-            Console.WriteLine("Degree: " + Degree);
-            Console.WriteLine("GPA: " + GPA);
-            Console.WriteLine("Universty Id : " + UniversityId);
-            Console.WriteLine("-----------------------------------------");
+            using var connection = MyConnection.Get();
+            connection.Open();
+
+            var command = new SqlCommand("SELECT TOP 1 id FROM tb_m_educations ORDER BY id DESC", connection);
+
+            int id = Convert.ToInt32(command.ExecuteScalar());
+            connection.Close();
+
+            return id;
         }
     }
 }

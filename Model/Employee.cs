@@ -1,15 +1,17 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using MCC78.Context;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCC78
+namespace MCC78.Model
 {
-    public class Employees
+    public class Employee
     {
         private static readonly string connectionString =
          "Data Source=SWHITE;Database=db_Emp;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
@@ -25,10 +27,10 @@ namespace MCC78
         public string PhoneNumber { get; set; }
         public string DepartmentId { get; set; }
 
-        public static int InsertEmployee(Employees employees)
+        public int InsertEmployee(Employee employees)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
 
             SqlTransaction transaction = connection.BeginTransaction();
@@ -36,7 +38,8 @@ namespace MCC78
             {
                 SqlCommand command = new SqlCommand();
                 command.Connection = connection;
-                command.CommandText = "INSERT INTO tb_m_employees(nik, first_name, last_name, birthdate, gender, hiring_date, email, phone_number, department_id) " +
+                command.CommandText =
+                    "INSERT INTO tb_m_employees(nik, first_name, last_name, birthdate, gender, hiring_date, email, phone_number, department_id) " +
                     "VALUES (@NIK, @FirstName, @LastName, @Birthdate, @Gender, @HiringDate, @Email, @PhoneNumber, @DepartmentId)";
                 command.Transaction = transaction;
 
@@ -116,12 +119,13 @@ namespace MCC78
             {
                 connection.Close();
             }
+
             return result;
         }
 
-        public static string GetEmpId(string NIK)
+        public string GetEmpId(string NIK)
         {
-            using SqlConnection connection = new SqlConnection(connectionString);
+            using SqlConnection connection = MyConnection.Get();
             connection.Open();
 
             SqlCommand command = new SqlCommand("SELECT id FROM tb_m_employees WHERE nik=(@NIK)", connection);
@@ -137,102 +141,11 @@ namespace MCC78
             return lastEmpId;
         }
 
-        public static int GetUnivEduId(int choice)
+
+        public List<Employee> GetEmployee()
         {
-            using var connection = new SqlConnection(connectionString);
-            connection.Open();
-            if (choice == 1)
-            {
-                SqlCommand command = new SqlCommand("SELECT TOP 1 id FROM tb_m_universities ORDER BY id DESC", connection);
-
-                int id = Convert.ToInt32(command.ExecuteScalar());
-                connection.Close();
-
-                return id;
-            }
-            else
-            {
-                SqlCommand command = new SqlCommand("SELECT TOP 1 id FROM tb_m_educations ORDER BY id DESC", connection);
-
-                int id = Convert.ToInt32(command.ExecuteScalar());
-                connection.Close();
-
-                return id;
-            }
-        }
-        public static void PrintOutEmployee()
-        {
-            var employee = new Employees();
-            var profiling = new Profilings();
-            var education = new Educations();
-            var university = new Universities();
-
-            Console.Write("NIK : ");
-            var niks = Console.ReadLine();
-            employee.Nik = niks;
-
-            Console.Write("First Name : ");
-            employee.FirstName = Console.ReadLine();
-
-            Console.Write("Lame Name : ");
-            employee.LastName = Console.ReadLine();
-
-            Console.Write("Birthdate : ");
-            employee.Birthdate = DateTime.Parse(Console.ReadLine());
-
-            Console.Write("Gender : ");
-            employee.Gender = Console.ReadLine();
-
-            Console.Write("Hiring Date : ");
-            employee.HiringDate = DateTime.Parse(Console.ReadLine());
-
-            Console.Write("Email : ");
-            employee.Email = Console.ReadLine();
-
-            Console.Write("Phone Number : ");
-            employee.PhoneNumber = Console.ReadLine();
-
-            Console.Write("Department ID : ");
-            employee.DepartmentId = Console.ReadLine();
-
-            //InsertEmployee(employee);
-
-            //EDUCATION
-            Console.Write("Major : ");
-            education.Major = Console.ReadLine();
-
-            Console.Write("Degree : ");
-            education.Degree = Console.ReadLine();
-
-            Console.Write("GPA : ");
-            education.GPA = Console.ReadLine();
-
-            Console.Write("University Name : ");
-            university.Name = Console.ReadLine();
-
-            var result = InsertEmployee(employee);
-            if (result > 0)
-            {
-                Console.WriteLine("INSERT Success");
-            }
-            else
-            {
-                Console.WriteLine("INSERT Failed");
-            }
-
-            Universities.InsertUniversity(university);
-            education.UniversityId = GetUnivEduId(1);
-            Educations.InsertEducation(education);
-
-            profiling.EmployeeId = GetEmpId(niks);
-            profiling.EducationId = GetUnivEduId(2);
-            Profilings.InsertProfiling(profiling);
-        }
-
-        public static List<Employees> GetEmployee()
-        {
-            var employee = new List<Employees>();
-            using SqlConnection connection = new SqlConnection(connectionString);
+            var employee = new List<Employee>();
+            using SqlConnection connection = MyConnection.Get();
             try
             {
                 SqlCommand command = new SqlCommand();
@@ -245,7 +158,7 @@ namespace MCC78
                 {
                     while (reader.Read())
                     {
-                        var emp = new Employees();
+                        var emp = new Employee();
                         emp.Id = reader.GetGuid(0).ToString();
                         emp.Nik = reader.GetString(1);
                         emp.FirstName = reader.GetString(2);
@@ -258,6 +171,7 @@ namespace MCC78
                         emp.DepartmentId = reader.GetString(9);
                         employee.Add(emp);
                     }
+
                     return employee;
                 }
             }
@@ -269,7 +183,8 @@ namespace MCC78
             {
                 connection.Close();
             }
-            return new List<Employees>();
+
+            return new List<Employee>();
         }
     }
 }

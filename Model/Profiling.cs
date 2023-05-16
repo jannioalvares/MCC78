@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using MCC78.Context;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,22 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCC78
+namespace MCC78.Model
 {
-    public class Profilings
+    public class Profiling
     {
         public string EmployeeId { get; set; }
         public int EducationId { get; set; }
 
-        private static readonly string connectionString =
-         "Data Source=SWHITE;Database=db_Emp;Integrated Security=True;Connect Timeout=30;Encrypt=False;";
-        public static int InsertProfiling(Profilings profilings)
+        public int InsertProfiling(Profiling profilings)
         {
             int result = 0;
-            using var connection = new SqlConnection(connectionString);
+            using var connection = MyConnection.Get();
             connection.Open();
-            var employee = new Employees();
-            var education = new Educations();
+            var employee = new Employee();
+            var education = new Education();
 
             SqlTransaction transaction = connection.BeginTransaction();
             try
@@ -58,10 +57,10 @@ namespace MCC78
             return result;
         }
 
-        public static List<Profilings> GetProfiling()
+        public List<Profiling> GetProfiling()
         {
-            var profiling = new List<Profilings>();
-            using SqlConnection connection = new SqlConnection(connectionString);
+            var profiling = new List<Profiling>();
+            using SqlConnection connection = MyConnection.Get();
             try
             {
                 SqlCommand command = new SqlCommand();
@@ -74,7 +73,7 @@ namespace MCC78
                 {
                     while (reader.Read())
                     {
-                        var prof = new Profilings();
+                        var prof = new Profiling();
                         prof.EmployeeId = reader.GetGuid(0).ToString();
                         prof.EducationId = reader.GetInt32(1);
 
@@ -91,7 +90,7 @@ namespace MCC78
             {
                 connection.Close();
             }
-            return new List<Profilings>();
+            return new List<Profiling>();
         }
     }
 }

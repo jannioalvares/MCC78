@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MCC78
+namespace MCC78.Model
 {
     public class AccountRoles
     {
