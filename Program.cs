@@ -113,9 +113,9 @@ namespace MCC78
             }
         }
 
-        public static void SelectTable(int tabel2)
+        public static void SelectTable(int tabel)
         {
-            switch (tabel2)
+            switch (tabel)
             {
                 case 1:
                     universityController.GetAll();
@@ -274,7 +274,6 @@ namespace MCC78
             var employee = new Employee();
             var profiling = new Profiling();
             var university = new University();
-
 
             var educationGet = education.GetEducation();
             var employeeGet = employee.GetEmployee();

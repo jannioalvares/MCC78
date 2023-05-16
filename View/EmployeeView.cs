@@ -42,9 +42,5 @@ namespace MCC78.View
             Console.WriteLine("\nSELECT ALL FROM EMPLOYEE");
             Console.WriteLine("-----------------------------------------");
         }
-
-        public void OutputAll(Employee employee)
-        {
-        }
     }
 }

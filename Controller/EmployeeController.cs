@@ -40,12 +40,5 @@ namespace MCC78.Controller
                 view.Output("Insert Employee Success");
             }
         }
-
-        public void GetAllData()
-        {
-            _employee.getAllData();
-
-        }
-        
     }
 }
